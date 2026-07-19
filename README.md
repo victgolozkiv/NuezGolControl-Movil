@@ -129,6 +129,18 @@ Distribuido bajo licencia **MIT**. Puedes usar, modificar y distribuir este proy
 
 ---
 
+## ☕ ¿Te fue útil? Apóyame
+
+Si este proyecto te sirvió de inspiración o quieres que siga mejorando, puedes invitarme un café 🙌
+
+<div align="center">
+
+[![Donar con PayPal](https://img.shields.io/badge/Donar%20con-PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/VictorRicardo162/1)
+
+</div>
+
+---
+
 <div align="center">
 
 Hecho con ☕ y mucho campo en **Ciudad Jiménez, Chihuahua, México** 🇲🇽
