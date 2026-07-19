@@ -1,63 +1,136 @@
-# NuezGol Control (Android)
+<div align="center">
 
-Versión Android en **Kotlin** del sistema [NUEZGOLCONTROL](https://github.com/victgolozkiv/NUEZGOLCONTROL): control de ventas y cosechas de nuez.
+# 🌰 NuezGolControl Móvil
 
-## Características
+**Sistema de gestión de producción y ventas de nuez — 100% offline, directo desde tu bolsillo.**
 
-- Registro y listado de **ventas** (cliente, tipo Guicha/Western, kg, precio, total)
-- Registro y listado de **cosechas** (tipo de nuez, kg)
-- Eliminación con confirmación
-- Totales generales (dinero / kilogramos)
-- Exportación a CSV compatible con Excel
-- Fechas en zona horaria `America/Chihuahua`
-- Base de datos local con **Room** (`nuez.db`)
-- UI con **Jetpack Compose** (tema oscuro morado, como la web)
+[![Android](https://img.shields.io/badge/Platform-Android%208.0+-brightgreen?style=for-the-badge&logo=android)](https://developer.android.com)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-purple?style=for-the-badge&logo=kotlin)](https://kotlinlang.org)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-latest-blue?style=for-the-badge&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
+[![Room](https://img.shields.io/badge/Room%20DB-2.6-orange?style=for-the-badge)](https://developer.android.com/training/data-storage/room)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-## Requisitos
+> Versión Android del proyecto [NUEZGOLCONTROL](https://github.com/victgolozkiv/NUEZGOLCONTROL).  
+> Desarrollado con ❤️ por **Victor** — hecho para agricultores, con la ayuda de IA.
 
-- Android Studio Ladybug o superior (recomendado)
-- JDK 17
-- Dispositivo o emulador Android 8.0+ (API 26)
+</div>
 
-## Cómo abrir y ejecutar
+---
 
-1. Abre Android Studio → **Open** → selecciona la carpeta `NuezGolControl`
-2. Espera a que Gradle sincronice
-3. Pulsa **Run** (▶) en un emulador o teléfono
+## 📱 ¿Qué es?
 
-Desde terminal (con Android SDK configurado):
+**NuezGolControl Móvil** es una aplicación Android nativa para llevar el control completo de una operación agrícola de nuez: desde las cosechas del campo hasta la venta al cliente, el pago a trabajadores y los gastos operativos — todo sin necesidad de internet.
 
-```bash
-cd NuezGolControl
-./gradlew assembleDebug
+---
+
+## ✨ Características
+
+| Módulo | Descripción |
+|---|---|
+| 🏪 **Ventas** | Registra ventas con cliente, tipo de nuez (Guicha / Western), kilogramos, precio y total automático |
+| 🌿 **Cosechas** | Lleva el control de producción por tipo de nuez y cantidad en kg |
+| 👷 **Pagos a Trabajadores** | Pago por kilo cosechado o por raya (día), con autocompletado de nombres guardados |
+| 💸 **Gastos / Descuentos** | Registra gastos operativos (fertilizante, agua, etc.) que se **descuentan** del total de egresos |
+| 📊 **Resumen Financiero** | Balance automático: Total Pagos − Gastos = Neto de egresos |
+| 📤 **Exportación CSV** | Exporta ventas, cosechas y pagos a Excel con un solo toque |
+| 🔄 **Navegación fluida** | Desliza entre pantallas con el dedo, sin cortes ni lag |
+
+---
+
+## 🏗️ Tecnologías
+
+```
+Kotlin + Jetpack Compose     → UI declarativa moderna
+Room Database                → Base de datos local SQLite sin nube
+Navigation Compose           → Navegación entre pantallas
+HorizontalPager              → Deslizamiento fluido entre pestañas
+MVVM + StateFlow             → Arquitectura limpia y reactiva
+Material Design 3            → Tema oscuro morado premium
+FileProvider + CSV           → Exportación compatible con Excel
 ```
 
-El APK queda en:
+---
 
-`app/build/outputs/apk/debug/app-debug.apk`
-
-## Uso
-
-| Pantalla | Acción |
-|----------|--------|
-| Ventas | Ver historial, exportar, eliminar, ir a nueva venta |
-| Nueva venta | Cliente, tipo (Guicha/Western), cantidad kg, precio $/kg |
-| Cosechas | Ver historial, exportar, eliminar, ir a nueva cosecha |
-| Nueva cosecha | Tipo de nuez + cantidad kg |
-
-## Estructura
+## 📁 Estructura del proyecto
 
 ```
 NuezGolControl/
 ├── app/src/main/java/com/nuezgolcontrol/app/
-│   ├── data/          # Room: Venta, Cosecha, DAOs, DB, Repository
-│   ├── ui/            # Compose: pantallas y tema
-│   ├── util/          # Formato fechas/moneda + exportación
-│   ├── MainActivity.kt
+│   ├── data/
+│   │   ├── Venta.kt / VentaDao.kt
+│   │   ├── Cosecha.kt / CosechaDao.kt
+│   │   ├── PagoTrabajador.kt / PagoTrabajadorDao.kt
+│   │   ├── Trabajador.kt / TrabajadorDao.kt
+│   │   ├── Gasto.kt / GastoDao.kt
+│   │   ├── NuezDatabase.kt
+│   │   └── NuezRepository.kt
+│   ├── ui/
+│   │   ├── ventas/          ← VentasScreen, VentasViewModel, NuevaVentaScreen
+│   │   ├── cosechas/        ← CosechasScreen, CosechasViewModel, NuevaCosechaScreen
+│   │   ├── trabajadores/    ← TrabajadoresScreen, ViewModel, NuevoPagoScreen
+│   │   ├── components/      ← Componentes reutilizables (dialogs, cards, etc.)
+│   │   └── theme/           ← Colores, tipografía, tema oscuro
+│   ├── util/
+│   │   ├── ExcelExporter.kt ← Genera y comparte archivos CSV
+│   │   └── Formatters.kt    ← Formateo de fechas, moneda y kilogramos
+│   ├── MainActivity.kt      ← Navegación principal con HorizontalPager
 │   └── NuezGolApplication.kt
 └── app/src/main/res/
+    ├── values/              ← strings, colors, themes
+    └── xml/file_paths.xml   ← FileProvider para exportar
 ```
 
-## Licencia
+---
 
-MIT — mismo espíritu que el proyecto web original.
+## 🚀 Cómo ejecutar
+
+### Requisitos
+- **Android Studio** Ladybug o superior
+- **JDK 17**
+- Dispositivo o emulador **Android 8.0+ (API 26)**
+
+### Desde Android Studio
+1. Abre Android Studio → **Open** → selecciona la carpeta `NuezGolControl`
+2. Espera a que Gradle sincronice las dependencias
+3. Pulsa **▶ Run** en un emulador o teléfono conectado
+
+### Desde terminal (con ADB)
+```bash
+# Compilar e instalar directamente en el dispositivo conectado
+./gradlew installDebug
+
+# Solo generar el APK
+./gradlew assembleDebug
+# → APK en: app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
+## 📸 Pantallas
+
+| Ventas | Cosechas | Pagos & Gastos |
+|:---:|:---:|:---:|
+| Historial de ventas con totales | Producción por tipo de nuez | Balance de egresos y trabajadores |
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Filtros por rango de fechas
+- [ ] Gráficas de producción y ventas
+- [ ] Respaldo / exportación completa de la base de datos
+- [ ] Widget de resumen para la pantalla de inicio
+
+---
+
+## 📄 Licencia
+
+Distribuido bajo licencia **MIT**. Puedes usar, modificar y distribuir este proyecto libremente.
+
+---
+
+<div align="center">
+
+Hecho con ☕ y mucho campo en **Ciudad Jiménez, Chihuahua, México** 🇲🇽
+
+</div>
