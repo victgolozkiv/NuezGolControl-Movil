@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Agriculture
 import androidx.compose.material.icons.filled.Group
@@ -37,6 +38,7 @@ import com.nuezgolcontrol.app.ui.ventas.VentasScreen
 import com.nuezgolcontrol.app.ui.ventas.VentasViewModel
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,82 +71,77 @@ fun NuezGolApp(repository: com.nuezgolcontrol.app.data.NuezRepository) {
     val ventasVm: VentasViewModel = viewModel(factory = VentasViewModel.factory(repository))
     val cosechasVm: CosechasViewModel = viewModel(factory = CosechasViewModel.factory(repository))
     val trabajadoresVm: TrabajadoresViewModel = viewModel(factory = TrabajadoresViewModel.factory(repository))
-    val backStack by navController.currentBackStackEntryAsState()
-    val currentDestination = backStack?.destination
-    val showBottomBar = currentDestination?.route in topRoutes.map { it.route }
 
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar) {
-                NavigationBar {
-                    topRoutes.forEach { item ->
-                        val selected = currentDestination
-                            ?.hierarchy
-                            ?.any { it.route == item.route } == true
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+    NavHost(
+        navController = navController,
+        startDestination = "main_tabs",
+        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(300)) },
+        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(300)) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(300)) },
+        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(300)) }
+    ) {
+        composable("main_tabs") {
+            val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { topRoutes.size })
+            val scope = androidx.compose.runtime.rememberCoroutineScope()
+            
+            Scaffold(
+                bottomBar = {
+                    NavigationBar {
+                        topRoutes.forEachIndexed { index, item ->
+                            val selected = pagerState.targetPage == index
+                            NavigationBarItem(
+                                selected = selected,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
+                                },
+                                icon = { Icon(item.icon, contentDescription = item.label) },
+                                label = { Text(item.label) }
+                            )
+                        }
+                    }
+                }
+            ) { padding ->
+                androidx.compose.foundation.pager.HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.padding(padding).fillMaxSize(),
+                    beyondViewportPageCount = 2
+                ) { page ->
+                    when (page) {
+                        0 -> VentasScreen(
+                            viewModel = ventasVm,
+                            onNuevaVenta = { navController.navigate("nueva_venta") }
+                        )
+                        1 -> CosechasScreen(
+                            viewModel = cosechasVm,
+                            onNuevaCosecha = { navController.navigate("nueva_cosecha") }
+                        )
+                        2 -> TrabajadoresScreen(
+                            viewModel = trabajadoresVm,
+                            onNuevoPago = { navController.navigate("nuevo_pago_trabajador") }
                         )
                     }
                 }
             }
         }
-    ) { padding ->
-        NavHost(
-            navController = navController,
-            startDestination = TopRoute.Ventas.route,
-            modifier = Modifier.padding(padding),
-            enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(300)) },
-            exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(300)) },
-            popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(300)) },
-            popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(300)) }
-        ) {
-            composable(TopRoute.Ventas.route) {
-                VentasScreen(
-                    viewModel = ventasVm,
-                    onNuevaVenta = { navController.navigate("nueva_venta") }
-                )
-            }
-            composable("nueva_venta") {
-                NuevaVentaScreen(
-                    viewModel = ventasVm,
-                    onBack = { navController.popBackStack() }
-                )
-            }
-            composable(TopRoute.Cosechas.route) {
-                CosechasScreen(
-                    viewModel = cosechasVm,
-                    onNuevaCosecha = { navController.navigate("nueva_cosecha") }
-                )
-            }
-            composable("nueva_cosecha") {
-                NuevaCosechaScreen(
-                    viewModel = cosechasVm,
-                    onBack = { navController.popBackStack() }
-                )
-            }
-            composable(TopRoute.Trabajadores.route) {
-                TrabajadoresScreen(
-                    viewModel = trabajadoresVm,
-                    onNuevoPago = { navController.navigate("nuevo_pago_trabajador") }
-                )
-            }
-            composable("nuevo_pago_trabajador") {
-                NuevoPagoTrabajadorScreen(
-                    viewModel = trabajadoresVm,
-                    onBack = { navController.popBackStack() }
-                )
-            }
+        composable("nueva_venta") {
+            NuevaVentaScreen(
+                viewModel = ventasVm,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("nueva_cosecha") {
+            NuevaCosechaScreen(
+                viewModel = cosechasVm,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("nuevo_pago_trabajador") {
+            NuevoPagoTrabajadorScreen(
+                viewModel = trabajadoresVm,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

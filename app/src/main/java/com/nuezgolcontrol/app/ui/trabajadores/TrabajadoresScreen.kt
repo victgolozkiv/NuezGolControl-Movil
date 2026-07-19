@@ -77,7 +77,7 @@ fun TrabajadoresScreen(
 
     val totalPagos = pagos.sumOf { it.total }
     val totalGastos = gastos.sumOf { it.monto }
-    val totalEgresos = totalPagos + totalGastos
+    val totalEgresos = totalPagos - totalGastos
 
     val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
@@ -181,7 +181,7 @@ fun TrabajadoresScreen(
                                 }
 
                                 ResumenRow("Total pagos trabajadores:", Formatters.dinero(totalPagos), isSubtotal = true)
-                                ResumenRow("Total gastos / descuentos:", Formatters.dinero(totalGastos), isSubtotal = true)
+                                ResumenRow("Total gastos / descuentos:", "- ${Formatters.dinero(totalGastos)}", isSubtotal = true)
                                 HorizontalDivider()
                                 ResumenRow("TOTAL EGRESOS:", Formatters.dinero(totalEgresos), isTotal = true)
                             }
