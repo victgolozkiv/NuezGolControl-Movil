@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Agriculture
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material3.Icon
@@ -29,6 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import com.nuezgolcontrol.app.ui.cosechas.CosechasScreen
 import com.nuezgolcontrol.app.ui.cosechas.CosechasViewModel
 import com.nuezgolcontrol.app.ui.cosechas.NuevaCosechaScreen
+import com.nuezgolcontrol.app.ui.resumen.ResumenFinancieroScreen
+import com.nuezgolcontrol.app.ui.resumen.ResumenFinancieroViewModel
 import com.nuezgolcontrol.app.ui.theme.NuezGolTheme
 import com.nuezgolcontrol.app.ui.trabajadores.NuevoPagoTrabajadorScreen
 import com.nuezgolcontrol.app.ui.trabajadores.TrabajadoresScreen
@@ -58,16 +61,18 @@ private sealed class TopRoute(
     val label: String,
     val icon: ImageVector
 ) {
+    data object Resumen : TopRoute("resumen", "Resumen", Icons.Default.Dashboard)
     data object Ventas : TopRoute("ventas", "Ventas", Icons.Default.PointOfSale)
     data object Cosechas : TopRoute("cosechas", "Cosechas", Icons.Default.Agriculture)
     data object Trabajadores : TopRoute("trabajadores", "Pagos", Icons.Default.Group)
 }
 
-private val topRoutes = listOf(TopRoute.Ventas, TopRoute.Cosechas, TopRoute.Trabajadores)
+private val topRoutes = listOf(TopRoute.Resumen, TopRoute.Ventas, TopRoute.Cosechas, TopRoute.Trabajadores)
 
 @Composable
 fun NuezGolApp(repository: com.nuezgolcontrol.app.data.NuezRepository) {
     val navController = rememberNavController()
+    val resumenVm: ResumenFinancieroViewModel = viewModel(factory = ResumenFinancieroViewModel.factory(repository))
     val ventasVm: VentasViewModel = viewModel(factory = VentasViewModel.factory(repository))
     val cosechasVm: CosechasViewModel = viewModel(factory = CosechasViewModel.factory(repository))
     val trabajadoresVm: TrabajadoresViewModel = viewModel(factory = TrabajadoresViewModel.factory(repository))
@@ -109,15 +114,16 @@ fun NuezGolApp(repository: com.nuezgolcontrol.app.data.NuezRepository) {
                     beyondViewportPageCount = 2
                 ) { page ->
                     when (page) {
-                        0 -> VentasScreen(
+                        0 -> ResumenFinancieroScreen(viewModel = resumenVm)
+                        1 -> VentasScreen(
                             viewModel = ventasVm,
                             onNuevaVenta = { navController.navigate("nueva_venta") }
                         )
-                        1 -> CosechasScreen(
+                        2 -> CosechasScreen(
                             viewModel = cosechasVm,
                             onNuevaCosecha = { navController.navigate("nueva_cosecha") }
                         )
-                        2 -> TrabajadoresScreen(
+                        3 -> TrabajadoresScreen(
                             viewModel = trabajadoresVm,
                             onNuevoPago = { navController.navigate("nuevo_pago_trabajador") }
                         )
