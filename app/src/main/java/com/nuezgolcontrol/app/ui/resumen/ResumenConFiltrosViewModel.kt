@@ -41,7 +41,7 @@ class ResumenConFiltrosViewModel(private val repository: NuezRepository) : ViewM
     ) { ventas, pagos, gastos, dateRange, label ->
         
         val filteredVentas = ventas.filter { 
-            DateRangeFilter.isInRange(it.fecha, dateRange) 
+            DateRangeFilter.isInRange(it.fechaMillis, dateRange) 
         }
         val filteredPagos = pagos.filter { 
             DateRangeFilter.isInRange(it.fecha, dateRange) 

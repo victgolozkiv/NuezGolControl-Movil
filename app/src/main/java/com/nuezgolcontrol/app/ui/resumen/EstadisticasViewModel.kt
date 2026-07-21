@@ -41,7 +41,7 @@ class EstadisticasViewModel(private val repository: NuezRepository) : ViewModel(
                         listVentas.map { it.precioUnitario }.average() 
                     else 0.0
                 )
-            }.sortByDescending { it.ingresoTotal }
+            }.sortedByDescending { it.ingresoTotal }
             
             val productoMasVendido = estadisticas.maxByOrNull { it.cantidadTotal }
             val productoMasLucrador = estadisticas.maxByOrNull { it.ingresoTotal }

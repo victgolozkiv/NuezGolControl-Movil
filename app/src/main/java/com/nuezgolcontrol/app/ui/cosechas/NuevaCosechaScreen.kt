@@ -15,10 +15,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -38,14 +42,17 @@ import androidx.compose.ui.unit.dp
 import com.nuezgolcontrol.app.ui.theme.PurplePrimary
 import kotlinx.coroutines.launch
 
+private val tiposNuez = listOf("Guicha", "Western")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NuevaCosechaScreen(
     viewModel: CosechasViewModel,
     onBack: () -> Unit
 ) {
-    var tipoNuez by remember { mutableStateOf("") }
+    var tipoNuez by remember { mutableStateOf(tiposNuez.first()) }
     var cantidad by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -79,14 +86,35 @@ fun NuevaCosechaScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            OutlinedTextField(
-                value = tipoNuez,
-                onValueChange = { tipoNuez = it },
-                label = { Text("Tipo de Nuez") },
-                placeholder = { Text("Ej: Nogal, Guicha, Western…") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = it }
+            ) {
+                OutlinedTextField(
+                    value = tipoNuez,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Tipo de Nuez") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    tiposNuez.forEach { tipo ->
+                        DropdownMenuItem(
+                            text = { Text(tipo) },
+                            onClick = {
+                                tipoNuez = tipo
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = cantidad,

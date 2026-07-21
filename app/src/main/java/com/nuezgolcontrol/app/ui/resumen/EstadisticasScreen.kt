@@ -2,6 +2,7 @@ package com.nuezgolcontrol.app.ui.resumen
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +44,7 @@ fun EstadisticasScreen(viewModel: EstadisticasViewModel) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color.Transparent)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -53,21 +54,22 @@ fun EstadisticasScreen(viewModel: EstadisticasViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = PurplePrimary.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(12.dp)
+                        color = PurplePrimary.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(16.dp)
                     )
+                    .border(1.dp, PurplePrimary.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "📊 Estadísticas por Producto",
-                    fontSize = 24.sp,
+                    text = "📊 Rendimiento por Variedad de Nuez",
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = Color.White
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${uiState.ventasTotales} transacciones registradas",
-                    fontSize = 12.sp,
+                    text = "${uiState.ventasTotales} transacciones de venta registradas",
+                    fontSize = 13.sp,
                     color = TealTotal,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -81,30 +83,34 @@ fun EstadisticasScreen(viewModel: EstadisticasViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Más vendido
-                if (uiState.productoMasVendido != null) {
+                val masVendido = uiState.productoMasVendido
+                if (masVendido != null) {
                     DestacadoCard(
                         titulo = "🏆 Más Vendido",
-                        producto = uiState.productoMasVendido.tipoNuez,
-                        valor = "${Formatters.numero(uiState.productoMasVendido.cantidadTotal)} kg",
-                        color = Color(0xFF4CAF50),
+                        producto = masVendido.tipoNuez,
+                        valor = "${Formatters.numero(masVendido.cantidadTotal)} kg",
+                        color = Color(0xFF81C784),
+                        borderColor = Color(0xFF81C784).copy(alpha = 0.35f),
+                        backgroundColor = Color(0xFF1B5E20).copy(alpha = 0.2f),
                         modifier = Modifier.weight(1f)
                     )
                 }
 
                 // Más lucrativo
-                if (uiState.productoMasLucrador != null) {
+                val masLucrador = uiState.productoMasLucrador
+                if (masLucrador != null) {
                     DestacadoCard(
                         titulo = "💰 Más Lucrativo",
-                        producto = uiState.productoMasLucrador.tipoNuez,
-                        valor = Formatters.dinero(uiState.productoMasLucrador.ingresoTotal),
+                        producto = masLucrador.tipoNuez,
+                        valor = Formatters.dinero(masLucrador.ingresoTotal),
                         color = Color(0xFFFFB74D),
+                        borderColor = Color(0xFFFFB74D).copy(alpha = 0.35f),
+                        backgroundColor = Color(0xFFE65100).copy(alpha = 0.15f),
                         modifier = Modifier.weight(1f)
                     )
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         // Lista de productos
         items(uiState.estadisticas) { estadistica ->
@@ -123,17 +129,20 @@ fun DestacadoCard(
     producto: String,
     valor: String,
     color: Color,
+    borderColor: Color,
+    backgroundColor: Color,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .height(120.dp)
-            .animateContentSize(),
-        shape = RoundedCornerShape(12.dp),
+            .height(130.dp)
+            .animateContentSize()
+            .border(1.dp, borderColor, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = color.copy(alpha = 0.2f)
+            containerColor = backgroundColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
@@ -143,20 +152,21 @@ fun DestacadoCard(
         ) {
             Text(
                 text = titulo,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = color
+                fontSize = 11.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = color,
+                letterSpacing = 0.5.sp
             )
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = producto,
+                    text = producto.replaceFirstChar { it.uppercase() },
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
                     text = valor,
-                    fontSize = 16.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = color
                 )
@@ -172,18 +182,19 @@ fun ProductoEstadisticaCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize(),
-        shape = RoundedCornerShape(12.dp),
+            .animateContentSize()
+            .border(1.dp, Color(0xFF222222), RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1A1A1A)
+            containerColor = Color(0xFF0F0F0F)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             // Encabezado
             Row(
@@ -201,14 +212,14 @@ fun ProductoEstadisticaCard(
                         tint = TealTotal,
                         modifier = Modifier
                             .background(
-                                color = TealTotal.copy(alpha = 0.2f),
+                                color = TealTotal.copy(alpha = 0.12f),
                                 shape = RoundedCornerShape(50.dp)
                             )
                             .padding(8.dp)
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 8.dp))
                     Text(
-                        text = estadistica.tipoNuez,
+                        text = estadistica.tipoNuez.replaceFirstChar { it.uppercase() },
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -221,7 +232,7 @@ fun ProductoEstadisticaCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(Color(0xFF2A2A2A))
+                    .background(Color(0xFF222222))
             )
 
             // Fila 1: Cantidad y # ventas
@@ -233,7 +244,7 @@ fun ProductoEstadisticaCard(
                     Text(
                         text = "Cantidad Total",
                         fontSize = 11.sp,
-                        color = Color(0xFFAAAAAA)
+                        color = Color(0xFF888888)
                     )
                     Text(
                         text = Formatters.kg(estadistica.cantidadTotal),
@@ -244,12 +255,12 @@ fun ProductoEstadisticaCard(
                 }
                 Column {
                     Text(
-                        text = "# Ventas",
+                        text = "Ventas",
                         fontSize = 11.sp,
-                        color = Color(0xFFAAAAAA)
+                        color = Color(0xFF888888)
                     )
                     Text(
-                        text = estadistica.ventasCount.toString(),
+                        text = "${estadistica.ventasCount} trans.",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF81C784)
@@ -259,7 +270,7 @@ fun ProductoEstadisticaCard(
                     Text(
                         text = "Precio Promedio",
                         fontSize = 11.sp,
-                        color = Color(0xFFAAAAAA)
+                        color = Color(0xFF888888)
                     )
                     Text(
                         text = Formatters.dinero(estadistica.precioPromedio),
@@ -270,16 +281,15 @@ fun ProductoEstadisticaCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             // Fila 2: Ingreso Total
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = Color(0xFF1B5E20).copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(8.dp)
+                        color = Color(0xFF1B5E20).copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(10.dp)
                     )
+                    .border(1.dp, Color(0xFF81C784).copy(alpha = 0.25f), RoundedCornerShape(10.dp))
                     .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -294,7 +304,7 @@ fun ProductoEstadisticaCard(
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(
-                        text = "Ingreso Total",
+                        text = "Ingreso Total Acumulado",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color(0xFF81C784)
@@ -302,7 +312,7 @@ fun ProductoEstadisticaCard(
                 }
                 Text(
                     text = Formatters.dinero(estadistica.ingresoTotal),
-                    fontSize = 14.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFF81C784)
                 )

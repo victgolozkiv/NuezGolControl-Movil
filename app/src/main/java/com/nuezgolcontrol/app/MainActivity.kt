@@ -19,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -32,6 +34,8 @@ import com.nuezgolcontrol.app.ui.cosechas.CosechasViewModel
 import com.nuezgolcontrol.app.ui.cosechas.NuevaCosechaScreen
 import com.nuezgolcontrol.app.ui.resumen.ResumenFinancieroScreen
 import com.nuezgolcontrol.app.ui.resumen.ResumenFinancieroViewModel
+import com.nuezgolcontrol.app.ui.resumen.ResumenConFiltrosViewModel
+import com.nuezgolcontrol.app.ui.resumen.EstadisticasViewModel
 import com.nuezgolcontrol.app.ui.theme.NuezGolTheme
 import com.nuezgolcontrol.app.ui.trabajadores.NuevoPagoTrabajadorScreen
 import com.nuezgolcontrol.app.ui.trabajadores.TrabajadoresScreen
@@ -73,6 +77,8 @@ private val topRoutes = listOf(TopRoute.Resumen, TopRoute.Ventas, TopRoute.Cosec
 fun NuezGolApp(repository: com.nuezgolcontrol.app.data.NuezRepository) {
     val navController = rememberNavController()
     val resumenVm: ResumenFinancieroViewModel = viewModel(factory = ResumenFinancieroViewModel.factory(repository))
+    val resumenConFiltrosVm: ResumenConFiltrosViewModel = viewModel(factory = ResumenConFiltrosViewModel.factory(repository))
+    val estadisticasVm: EstadisticasViewModel = viewModel(factory = EstadisticasViewModel.factory(repository))
     val ventasVm: VentasViewModel = viewModel(factory = VentasViewModel.factory(repository))
     val cosechasVm: CosechasViewModel = viewModel(factory = CosechasViewModel.factory(repository))
     val trabajadoresVm: TrabajadoresViewModel = viewModel(factory = TrabajadoresViewModel.factory(repository))
@@ -91,7 +97,10 @@ fun NuezGolApp(repository: com.nuezgolcontrol.app.data.NuezRepository) {
             
             Scaffold(
                 bottomBar = {
-                    NavigationBar {
+                    NavigationBar(
+                        containerColor = Color(0xFF0D0D0D),
+                        tonalElevation = 0.dp
+                    ) {
                         topRoutes.forEachIndexed { index, item ->
                             val selected = pagerState.targetPage == index
                             NavigationBarItem(
@@ -114,7 +123,11 @@ fun NuezGolApp(repository: com.nuezgolcontrol.app.data.NuezRepository) {
                     beyondViewportPageCount = 2
                 ) { page ->
                     when (page) {
-                        0 -> ResumenFinancieroScreen(viewModel = resumenVm)
+                        0 -> ResumenFinancieroScreen(
+                            viewModel = resumenVm,
+                            filtrosViewModel = resumenConFiltrosVm,
+                            estadisticasViewModel = estadisticasVm
+                        )
                         1 -> VentasScreen(
                             viewModel = ventasVm,
                             onNuevaVenta = { navController.navigate("nueva_venta") }

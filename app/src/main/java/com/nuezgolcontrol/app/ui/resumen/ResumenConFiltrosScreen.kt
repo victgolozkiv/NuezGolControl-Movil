@@ -2,6 +2,7 @@ package com.nuezgolcontrol.app.ui.resumen
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,7 +63,7 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color.Transparent)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -72,21 +73,22 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = PurplePrimary.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(12.dp)
+                    color = PurplePrimary.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(16.dp)
                 )
+                .border(1.dp, PurplePrimary.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Text(
-                text = "📊 Resumen Financiero Detallado",
-                fontSize = 24.sp,
+                text = "🔎 Análisis por Rango de Fechas",
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = Color.White
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Período: ${uiState.filtroActual}",
-                fontSize = 12.sp,
+                text = "Período actual: ${uiState.filtroActual}",
+                fontSize = 13.sp,
                 color = TealTotal,
                 fontWeight = FontWeight.SemiBold
             )
@@ -98,40 +100,44 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(filters) { filter ->
+                val isSelected = filter.label == uiState.filtroActual
                 AssistChip(
                     onClick = filter.action,
                     label = { Text(filter.label, fontSize = 12.sp) },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (filter.label == uiState.filtroActual) PurplePrimary else Color(0xFF2A2A2A),
-                        labelColor = if (filter.label == uiState.filtroActual) Color.White else MaterialTheme.colorScheme.onBackground
+                        containerColor = if (isSelected) PurplePrimary else Color(0xFF141414),
+                        labelColor = if (isSelected) Color.White else Color.Gray
                     ),
-                    modifier = Modifier.height(32.dp)
+                    border = AssistChipDefaults.assistChipBorder(
+                        enabled = true,
+                        borderColor = if (isSelected) PurplePrimary else Color(0xFF2E2E2E),
+                        borderWidth = 1.dp
+                    ),
+                    modifier = Modifier.height(36.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
         // Cards de Ingresos
         FinancialCardConDetalles(
-            title = "💰 Ingresos Totales",
+            title = "💰 Ingresos del Periodo",
             amount = uiState.totalIngresos,
             icon = Icons.Default.TrendingUp,
-            backgroundColor = Color(0xFF1B5E20),
+            backgroundColor = Color(0xFF1B5E20).copy(alpha = 0.25f),
+            borderColor = Color(0xFF81C784).copy(alpha = 0.3f),
             textColor = Color(0xFF81C784),
-            details = "${uiState.ventasCount} venta${if (uiState.ventasCount != 1) "s" else ""}"
+            details = "${uiState.ventasCount} venta${if (uiState.ventasCount != 1) "s" else ""} registrada${if (uiState.ventasCount != 1) "s" else ""}"
         )
-
-        Spacer(modifier = Modifier.height(12.dp))
 
         // Card de Egresos con detalles
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .animateContentSize(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF4A148C)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                .animateContentSize()
+                .border(1.dp, Color(0xFFCE93D8).copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF4A148C).copy(alpha = 0.3f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -154,9 +160,9 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
                             modifier = Modifier
                                 .padding(end = 12.dp)
                                 .background(
-                                    color = Danger.copy(alpha = 0.2f),
+                                    color = Danger.copy(alpha = 0.15f),
                                     shape = RoundedCornerShape(50.dp)
-                                )
+                               )
                                 .padding(8.dp)
                         )
                         Column {
@@ -186,7 +192,7 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
-                        .background(Color(0xFF6F42C1))
+                        .background(Color(0xFF6F42C1).copy(alpha = 0.3f))
                 )
 
                 // Pagos a empleados
@@ -245,18 +251,22 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
         // Card Ganancia Neta con indicador
+        val isPositive = uiState.gananciaNet >= 0
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .animateContentSize(),
-            shape = RoundedCornerShape(12.dp),
+                .animateContentSize()
+                .border(
+                    width = 1.dp,
+                    color = if (isPositive) TealTotal.copy(alpha = 0.30f) else Danger.copy(alpha = 0.30f),
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = if (uiState.gananciaNet >= 0) Color(0xFF1B5E20) else Color(0xFF8B0000)
+                containerColor = if (isPositive) Color(0xFF1B5E20).copy(alpha = 0.25f) else Color(0xFFB71C1C).copy(alpha = 0.25f)
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -271,22 +281,22 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = if (uiState.gananciaNet >= 0) "✅ Ganancia Neta" else "❌ Pérdida Neta",
+                            text = if (isPositive) "✅ Ganancia Neta" else "❌ Pérdida Neta",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (uiState.gananciaNet >= 0) Color(0xFF81C784) else Color(0xFFFF6B6B)
+                            color = if (isPositive) Color(0xFF81C784) else Color(0xFFFF6B6B)
                         )
                         Text(
                             text = "Ingresos - Egresos",
                             fontSize = 12.sp,
-                            color = if (uiState.gananciaNet >= 0) Color(0xFF81C784).copy(alpha = 0.7f) else Color(0xFFFF6B6B).copy(alpha = 0.7f)
+                            color = if (isPositive) Color(0xFF81C784).copy(alpha = 0.7f) else Color(0xFFFF6B6B).copy(alpha = 0.7f)
                         )
                     }
                     Text(
                         text = Formatters.dinero(uiState.gananciaNet),
                         fontSize = 28.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = if (uiState.gananciaNet >= 0) Color(0xFF81C784) else Color(0xFFFF6B6B)
+                        color = if (isPositive) Color(0xFF81C784) else Color(0xFFFF6B6B)
                     )
                 }
                 
@@ -296,7 +306,7 @@ fun ResumenConFiltrosScreen(viewModel: ResumenConFiltrosViewModel) {
                         .fillMaxWidth()
                         .height(4.dp)
                         .background(
-                            color = if (uiState.gananciaNet >= 0) Color(0xFF81C784).copy(alpha = 0.3f) else Color(0xFFFF6B6B).copy(alpha = 0.3f),
+                            color = if (isPositive) Color(0xFF81C784).copy(alpha = 0.3f) else Color(0xFFFF6B6B).copy(alpha = 0.3f),
                             shape = RoundedCornerShape(2.dp)
                         )
                 )
@@ -313,16 +323,18 @@ fun FinancialCardConDetalles(
     amount: Double,
     icon: ImageVector,
     backgroundColor: Color,
+    borderColor: Color,
     textColor: Color,
     details: String
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize(),
-        shape = RoundedCornerShape(12.dp),
+            .animateContentSize()
+            .border(1.dp, borderColor, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -349,7 +361,7 @@ fun FinancialCardConDetalles(
                 )
                 Text(
                     text = details,
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     color = textColor.copy(alpha = 0.7f)
                 )
             }
@@ -359,10 +371,10 @@ fun FinancialCardConDetalles(
                 tint = textColor,
                 modifier = Modifier
                     .background(
-                        color = textColor.copy(alpha = 0.15f),
+                        color = textColor.copy(alpha = 0.12f),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .padding(16.dp)
+                    .padding(14.dp)
             )
         }
     }
