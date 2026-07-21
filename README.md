@@ -220,6 +220,14 @@ Si este proyecto te sirvió de inspiración o quieres que siga mejorando, puedes
 
 Hecho con ☕ y mucho campo en **Ciudad Jiménez, Chihuahua, México** 🇲🇽
 
-**Versión: 2.0.0** - Financial Dashboard Release
+**Versión: 2.1.0** - Cosechas & Export Fix Release
 
 </div>
+
+---
+
+### 📝 Notas de la Versión 2.1.0
+- **Seguridad de Datos**: Se utiliza un correo electrónico cifrado y anónimo de GitHub para proteger la identidad del autor en los commits. Los tokens de acceso personales (PAT) son de uso temporal y no quedan almacenados en el repositorio público ni en el historial de git.
+- **Cosechas Inteligentes**: Selector dinámico de tipo de nuez (`Guicha` y `Western`), ahorrando tiempo y evitando tener que escribirlo manualmente.
+- **Corrección de Exportación**: Corregido el proveedor de archivos (`FileProvider`) en Android. Ahora el botón de **"Exportar Reporte Completo"** en formato CSV funciona perfectamente, permitiendo compartir tu reporte de temporada de inmediato hacia Excel, WhatsApp o Gmail sin cierres inesperados.
+
